@@ -1,0 +1,32 @@
+# Storage & Data Directories
+storage/
+sample_data/
+
+# Environment & Config
+.env
+.env.*
+
+# Python Cache & Bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Logs & Temporary Files
+*.log
+*.tmp
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo

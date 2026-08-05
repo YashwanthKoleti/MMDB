@@ -1,9 +1,8 @@
 import os
 import lancedb
-from .schemas import MultimodalAsset
+from .schemas import FileAsset, ImageSegment, AudioSegment, VideoSegment, DocumentSegment
 
 LANCEDB_URI = os.getenv("LANCEDB_URI", "storage/lancedb")
-TABLE_NAME = os.getenv("TABLE_NAME", "multimodal_assets")
 
 def get_db_connection():
     """
@@ -15,13 +14,34 @@ def get_db_connection():
         
     return lancedb.connect(LANCEDB_URI)
 
-def get_table():
-    """
-    Returns the LanceDB table, creating it if it doesn't exist.
-    """
+def _get_or_create_table(table_name: str, schema):
     db = get_db_connection()
-    if TABLE_NAME not in db.table_names():
-        # Create table with our defined Pydantic schema
-        return db.create_table(TABLE_NAME, schema=MultimodalAsset)
+    if table_name not in db.table_names():
+            return db.create_table(table_name, schema=schema)
     else:
-        return db.open_table(TABLE_NAME)
+            return db.open_table(table_name)
+
+def get_files_table():
+    return _get_or_create_table("files", FileAsset)
+
+def get_images_table():
+    return _get_or_create_table("image_segments", ImageSegment)
+
+def get_audio_table():
+    return _get_or_create_table("audio_segments", AudioSegment)
+
+def get_video_table():
+    return _get_or_create_table("video_segments", VideoSegment)
+
+def get_documents_table():
+    return _get_or_create_table("document_segments", DocumentSegment)
+
+def init_tables():
+    """Pre-create all tables so workers can safely open them without race conditions."""
+    print("Initializing LanceDB tables...")
+    get_files_table()
+    get_images_table()
+    get_audio_table()
+    get_video_table()
+    get_documents_table()
+    print("All tables ready.")
